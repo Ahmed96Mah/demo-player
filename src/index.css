@@ -3,3 +3,15 @@
 @tailwind utilities;
 
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap');
+
+main button:hover img{
+    filter: invert(15%) sepia(82%) saturate(4244%) hue-rotate(262deg) brightness(94%) contrast(98%);
+}
+
+main button:hover span{
+    color: #6d28d9;
+}
+
+main #link:hover img {
+    filter: invert(65%) sepia(71%) saturate(352%) hue-rotate(89deg) brightness(97%) contrast(99%);
+}
