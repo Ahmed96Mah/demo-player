@@ -132,7 +132,7 @@ const Upload = () => {
             }}
           />
           <button
-            className="my-5 bg-violet-50 font-bold text-lg text-violet-700 px-10 border py-1 rounded-xl"
+            className="my-5 bg-violet-50 font-bold text-lg text-violet-700 px-10 border py-1 rounded-xl disabled:bg-slate-400 disabled:text-stone-900 disabled:opacity-30"
             disabled={
               thumbnailEmpty === false && audioEmpty === false ? false : true
             }
