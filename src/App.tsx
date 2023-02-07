@@ -1,12 +1,15 @@
 import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 import './App.css';
+import Home from './Pages/Home';
+import Upload from './Pages/Upload';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-      </header>
-    </div>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/upload" element={<Upload />} />
+    </Routes>
   );
 }
 
