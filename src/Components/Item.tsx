@@ -12,17 +12,17 @@ const Item = ({
   deleteTrack: Function;
 }) => {
   return (
-    <div className="flex flex-row items-center border-b-2 w-10/12 py-3 mx-auto">
-      <div className="w-3/12 mr-5">
+    <div className="flex flex-row items-center border-b-2 w-10/12 py-5 mx-auto">
+      <div className="w-3/12 mr-5 md:mr-10">
         <img className="w-full" src={track.thumbnail} alt="" />
       </div>
       <div className="flex flex-col items-start">
-        <p className="font-bold text-left text-base text-slate-100">
+        <p className="font-bold text-left text-base text-slate-100 md:text-xl">
           {track.name}
         </p>
-        <div className="flex flex-row items-center mt-2">
+        <div className="flex flex-row items-center mt-2 md:mt-4">
           <img
-            className="w-5 mr-8 invert"
+            className="w-5 mr-8 invert cursor-pointer hover:invert-0"
             src={playIcon}
             alt=""
             onClick={() => {
@@ -30,7 +30,7 @@ const Item = ({
             }}
           />
           <img
-            className="w-5 invert"
+            className="w-5 invert cursor-pointer hover:invert-0"
             src={DeleteIcon}
             alt=""
             onClick={() => {
