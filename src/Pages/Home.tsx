@@ -62,8 +62,8 @@ const Home = () => {
   }, []);
   return (
     <div className="App font-space-grotesk bg-hero-mob bg-no-repeat bg-cover bg-center">
-      <header className="App-header pt-10 pb-5">
-        <h1 className="font-bold text-3xl text-center text-white">
+      <header className="App-header pt-10 pb-5 md:pb-10">
+        <h1 className="font-bold text-3xl text-center text-white md:text-5xl">
           Demo Audio Player
         </h1>
       </header>
@@ -80,24 +80,24 @@ const Home = () => {
           </div>
         )}
         {tracks.length > 0 && (
-          <div className="px-3 py-10 rounded-2xl w-11/12 mx-auto flex flex-col items-center bg-slate-200/[0.4]">
-            <h3 className="font-bold text-center text-xl text-stone-700 my-2">
+          <div className="px-3 py-10 rounded-2xl w-11/12 mx-auto flex flex-col items-center bg-slate-200/[0.4] md:w-4/6 xl:w-1/3">
+            <h3 className="font-bold text-center text-xl text-stone-700 my-2 md:text-3xl">
               {tracks[currentTrack]['name']}
             </h3>
-            <p className="text-center text-lg text-slate-100 my-2">
+            <p className="text-center text-lg text-slate-100 my-2 md:text-xl md:w-5/6">
               {tracks[currentTrack]['description']}
             </p>
             <img
-              className="w-7/12 my-5"
+              className="w-1/2 my-5 md:w-5/12"
               src={tracks[currentTrack]['thumbnail']}
               alt=""
             />
             <audio
-              className="w-full"
+              className="w-full md:w-10/12"
               controls
               src={tracks[currentTrack]['audio_src']}
             ></audio>
-            <div className="flex flex-row flex-nowrap items-center justify-between mt-6 w-5/6">
+            <div className="flex flex-row flex-nowrap items-center justify-between mt-6 w-5/6 md:w-7/12 md:mt-10">
               <button
                 className="flex flex-row flex-nowrap items-center"
                 onClick={() => {
@@ -112,7 +112,7 @@ const Home = () => {
                 <img src={prev} className="w-8 invert" alt="" />
               </button>
               <button
-                className="flex flex-row flex-nowrap items-center"
+                className="flex flex-row flex-nowrap items-center mr-3"
                 onClick={() => {
                   setCurrentTrack(
                     currentTrack === tracks.length - 1 ? 0 : currentTrack + 1
@@ -125,7 +125,7 @@ const Home = () => {
             </div>
           </div>
         )}
-        <div className="w-11/12 my-10 pt-3 pb-7 bg-slate-200/[0.4] rounded-xl">
+        <div className="w-11/12 my-10 pt-3 pb-7 bg-slate-200/[0.4] rounded-xl md:w-4/6 xl:w-1/3">
           {tracks.map((track: Track) => (
             <Item
               key={track.id}
@@ -136,11 +136,12 @@ const Home = () => {
           ))}
         </div>
         <Link
-          className="flex flex-row flex-nowrap items-center mb-8"
+          id='link'
+          className="flex flex-row flex-nowrap items-center mb-8 md:mb-12 group"
           to="/upload"
         >
           <img src={uploadIcon} className="w-10 mr-5 invert" alt="" />
-          <span className="text-lg text-white">Upload New Audio</span>
+          <span className="text-lg text-white md:text-xl group-hover:text-green-400 group-hover:underline group-hover:underline-offset-4">Upload New Audio</span>
         </Link>
       </main>
     </div>
