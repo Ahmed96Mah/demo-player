@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  getDocs,
   setDoc,
   orderBy,
   query,
   deleteDoc,
   doc,
+  onSnapshot,
 } from 'firebase/firestore';
 import { ref, deleteObject } from 'firebase/storage';
 import { collRef, storage } from '../firebase';
@@ -107,26 +107,26 @@ const Home = () => {
         audio_src: mainTarget.audio_src,
       });
     }
-    window.location.reload();
   };
 
   useEffect(() => {
-    const getTracks = async () => {
-      try {
-        // Get all docs from collection Reference
-        const querySnapshot = await getDocs(
-          query(collRef, orderBy('id', 'asc'))
-        );
-        // Set track list to docs data
-        setTracks(querySnapshot.docs.map((doc) => doc.data()));
-      } catch (err) {
-        document.querySelector('#error')!.classList.toggle('hidden');
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
-      }
+    const getTracks = (): Function => {
+      // Subscribe to collection data
+      const unsubscribe = onSnapshot(
+        query(collRef, orderBy('id', 'asc')),
+        (snapshot) => {
+          setTracks(snapshot.docs.map((doc) => doc.data()));
+        }
+      );
+      return unsubscribe;
     };
-    getTracks();
+
+    const unsubscribe = getTracks();
+
+    return () => {
+      // Clean up by unsubscribing
+      unsubscribe();
+    };
   }, []);
 
   return (
