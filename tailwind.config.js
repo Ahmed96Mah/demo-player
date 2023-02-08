@@ -9,6 +9,9 @@ module.exports = {
       backgroundImage: {
         'hero-mob': "url('./assets/heroMob.jpg')",
       },
+      boxShadow: {
+        '4xl': '0 0px 100px 500px',
+      }
     },
   },
   plugins: [],
