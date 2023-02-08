@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { getDocs, orderBy, query, deleteDoc, doc } from 'firebase/firestore';
+import { Link, useNavigate } from 'react-router-dom';
+import { getDocs, setDoc, orderBy, query, deleteDoc, doc } from 'firebase/firestore';
 import { ref, deleteObject } from 'firebase/storage';
 import { collRef, storage } from '../firebase';
 import Item from '../Components/Item';
@@ -13,6 +13,8 @@ const Home = () => {
   const [tracks, setTracks]: [Track[], Function] = useState([]);
   // To be used to move between tracks (with next & previous)
   const [currentTrack, setCurrentTrack] = useState(0);
+
+  const navigate = useNavigate();
 
   const changeCurrentTrack = (id: number) => {
     setCurrentTrack(id);
@@ -28,6 +30,14 @@ const Home = () => {
       await deleteDoc(docRef);
     } catch (err) {
       console.log(`Error!: ${err}`);
+      // Show the error Div
+      document.querySelector('#error')!.classList.toggle('hidden');
+      // Then, after 3 seconds navigate to home again.
+        setTimeout(() => {
+          navigate('/');
+        }, 3000);
+        // Abort the delete process (Since the docs still exists)
+        return;
     }
 
     try {
@@ -45,6 +55,47 @@ const Home = () => {
     }
   };
 
+  const moveTrack = async (targetId: number, otherId: number) => {
+    const mainTarget = tracks[targetId];
+    const otherTarget = tracks[otherId];
+    try {
+      // Update main target with other target data
+      await setDoc(doc(collRef, targetId.toString()), {
+        id: targetId,
+        name: otherTarget.name,
+        description: otherTarget.description,
+        thumbnail: otherTarget.thumbnail,
+        audio_src: otherTarget.audio_src,
+      });
+    }catch(err) {
+      console.log(`Error!: ${err}`);
+      // In case of an error, abort the operation
+      return;
+    }
+
+    try {
+      // Then, update other target with main target data
+      await setDoc(doc(collRef, otherId.toString()), {
+        id: otherId,
+        name: mainTarget.name,
+        description: mainTarget.description,
+        thumbnail: mainTarget.thumbnail,
+        audio_src: mainTarget.audio_src,
+      });
+    }catch(err) {
+      console.log(`Error!: ${err}`);
+      // Counter the operation
+      await setDoc(doc(collRef, targetId.toString()), {
+        id: targetId,
+        name: mainTarget.name,
+        description: mainTarget.description,
+        thumbnail: mainTarget.thumbnail,
+        audio_src: mainTarget.audio_src,
+      });
+    }
+    window.location.reload();
+  };
+
   useEffect(() => {
     const getTracks = async () => {
       try {
@@ -56,10 +107,15 @@ const Home = () => {
         setTracks(querySnapshot.docs.map((doc) => doc.data()));
       } catch (err) {
         console.log(`Error!: ${err}`);
+        document.querySelector('#error')!.classList.toggle('hidden');
+        setTimeout(() => {
+          navigate('/');
+        }, 3000);
       }
     };
     getTracks();
-  }, []);
+  }, [navigate]);
+  
   return (
     <div className="App font-space-grotesk bg-hero-mob bg-no-repeat bg-cover bg-center">
       <header className="App-header pt-10 pb-5 md:pb-10">
@@ -71,12 +127,15 @@ const Home = () => {
         {tracks.length === 0 && (
           <div className="h-screen pt-40">
             <svg
-              className="w-1/3 fa-spin mx-auto"
+              className="w-1/3 fa-spin mx-auto fill-green-300"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 512 512"
             >
               <path d="M222.7 32.1c5 16.9-4.6 34.8-21.5 39.8C121.8 95.6 64 169.1 64 256c0 106 86 192 192 192s192-86 192-192c0-86.9-57.8-160.4-137.1-184.1c-16.9-5-26.6-22.9-21.5-39.8s22.9-26.6 39.8-21.5C434.9 42.1 512 140 512 256c0 141.4-114.6 256-256 256S0 397.4 0 256C0 140 77.1 42.1 182.9 10.6c16.9-5 34.8 4.6 39.8 21.5z" />
             </svg>
+            <p className='text-center text-2xl font-bold pt-10 text-green-300'>
+              Fetching Data...
+            </p>
           </div>
         )}
         {tracks.length > 0 && (
@@ -94,8 +153,14 @@ const Home = () => {
             />
             <audio
               className="w-full md:w-10/12"
+              autoPlay
               controls
               src={tracks[currentTrack]['audio_src']}
+              onEnded={() => {
+                setCurrentTrack(
+                  currentTrack === tracks.length - 1 ? 0 : currentTrack + 1
+                );
+              }}
             ></audio>
             <div className="flex flex-row flex-nowrap items-center justify-between mt-6 w-5/6 md:w-7/12 md:mt-10">
               <button
@@ -125,13 +190,16 @@ const Home = () => {
             </div>
           </div>
         )}
-        <div className="w-11/12 my-10 pt-3 pb-7 bg-slate-200/[0.4] rounded-xl md:w-4/6 xl:w-1/3">
-          {tracks.map((track: Track) => (
+        <div className={(tracks.length > 0)? 'w-11/12 my-10 pt-6 pb-3 bg-slate-200/[0.4] rounded-xl md:w-4/6 xl:w-1/3': 'hidden'}>
+          {tracks.length > 0 &&
+          tracks.map((track: Track) => (
             <Item
               key={track.id}
               track={track}
+              fullLength={tracks.length}
               changeCurrentTrack={changeCurrentTrack}
               deleteTrack={deleteTrack}
+              moveTrack={moveTrack}
             />
           ))}
         </div>
@@ -143,6 +211,18 @@ const Home = () => {
           <img src={uploadIcon} className="w-10 mr-5 invert" alt="" />
           <span className="text-lg text-white md:text-xl group-hover:text-green-400 group-hover:underline group-hover:underline-offset-4">Upload New Audio</span>
         </Link>
+        <div id='error' className='hidden w-11/12 h-screen bg-white absolute top-0 rounded-2xl'>
+          <p className='pt-40 text-red-600 text-center text-2xl font-bold mb-20'>
+            An Error Ocurred! <br /> Please wait for the page to refresh
+          </p>
+          <svg
+              className="w-1/3 fa-spin mx-auto fill-red-600"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 512 512"
+            >
+              <path d="M222.7 32.1c5 16.9-4.6 34.8-21.5 39.8C121.8 95.6 64 169.1 64 256c0 106 86 192 192 192s192-86 192-192c0-86.9-57.8-160.4-137.1-184.1c-16.9-5-26.6-22.9-21.5-39.8s22.9-26.6 39.8-21.5C434.9 42.1 512 140 512 256c0 141.4-114.6 256-256 256S0 397.4 0 256C0 140 77.1 42.1 182.9 10.6c16.9-5 34.8 4.6 39.8 21.5z" />
+            </svg>
+        </div>
       </main>
     </div>
   );
