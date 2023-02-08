@@ -1,5 +1,5 @@
 import { FormEventHandler, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getCountFromServer, setDoc, doc } from 'firebase/firestore';
 import { collRef, storage } from '../firebase';
@@ -7,9 +7,12 @@ import { collRef, storage } from '../firebase';
 const Upload = () => {
   const [thumbnailEmpty, setThumbnailEmpty] = useState(true);
   const [audioEmpty, setAudioEmpty] = useState(true);
+  const navigate = useNavigate();
 
   const handleFormSubmit = async (e: Event) => {
     e.preventDefault();
+    // Show loading Div to user
+    document.querySelector('#loading')!.classList.toggle('hidden');
     // Get the chosen files
     const thumbnail = (
       (e.target as HTMLFormElement).thumbnail as HTMLInputElement
@@ -53,6 +56,9 @@ const Upload = () => {
         audio_src: audioURL,
       });
       (e.target as HTMLFormElement).reset();
+        setTimeout(() => {
+          navigate('/');
+        }, 2000);
     } catch (err) {
       console.log(`Error!: ${err}`);
     }
@@ -150,6 +156,18 @@ const Upload = () => {
             Return to Home
           </span>
         </Link>
+        <div id='loading' className='hidden shadow-4xl shadow-slate-400/[0.5] w-11/12 bg-white absolute top-40 rounded-2xl md:top-80 xl:top-40'>
+          <p className='pt-20 text-green-600 text-center text-xl font-bold mb-10 w-5/6 mx-auto md:text-2xl xl:text-3xl'>
+            Please Wait until we upload your files...
+          </p>
+          <svg
+              className="w-1/3 fa-spin mx-auto fill-green-600 mb-14 md:w-1/5 xl:w-1/6"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 512 512"
+            >
+              <path d="M222.7 32.1c5 16.9-4.6 34.8-21.5 39.8C121.8 95.6 64 169.1 64 256c0 106 86 192 192 192s192-86 192-192c0-86.9-57.8-160.4-137.1-184.1c-16.9-5-26.6-22.9-21.5-39.8s22.9-26.6 39.8-21.5C434.9 42.1 512 140 512 256c0 141.4-114.6 256-256 256S0 397.4 0 256C0 140 77.1 42.1 182.9 10.6c16.9-5 34.8 4.6 39.8 21.5z" />
+            </svg>
+        </div>
       </main>
     </div>
   );
