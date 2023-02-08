@@ -180,9 +180,9 @@ const Home = () => {
                   setCurrentTrack(Math.floor(Math.random() * tracks.length));
               }}
             ></audio>
-            <div className="flex flex-row flex-nowrap items-center justify-between mt-6 w-5/6 md:w-7/12 md:mt-10">
+            <div className="flex flex-row flex-nowrap items-center justify-between mt-6 w-5/6 md:w-7/12 md:mt-10 xl:w-9/12">
               <button
-                className="flex flex-row flex-nowrap items-center"
+                className="flex flex-row flex-nowrap items-center border-2 px-3 py-1 rounded-full xl:hover:bg-slate-100 xl:hover:border-transparent"
                 onClick={() => {
                   setCurrentTrack(
                     currentTrack === 0 ? tracks.length - 1 : currentTrack - 1
@@ -192,25 +192,25 @@ const Home = () => {
                 <span className="text-base text-stone-200 font-bold mr-2">
                   Previous
                 </span>
-                <img src={prev} className="w-8 invert" alt="" />
+                <img src={prev} className="w-5 invert" alt="" />
               </button>
               <button
-                className="flex flex-row flex-nowrap items-center mr-3"
+                className="flex flex-row flex-nowrap items-center border-2 px-6 py-1 rounded-full xl:hover:bg-slate-100 xl:hover:border-transparent"
                 onClick={() => {
                   setCurrentTrack(
                     currentTrack === tracks.length - 1 ? 0 : currentTrack + 1
                   );
                 }}
               >
-                <img src={next} className="w-8 invert mr-2" alt="" />
+                <img src={next} className="w-5 invert mr-2" alt="" />
                 <span className="text-base text-stone-200 font-bold">Next</span>
               </button>
             </div>
             <button
               className={
                 shuffle === false
-                  ? 'border-2 px-10 py-1 rounded-full mt-8'
-                  : 'bg-slate-100 border-2 border-transparent px-10 py-1 rounded-full mt-8'
+                  ? 'border-2 px-10 py-1 rounded-full mt-6'
+                  : 'bg-slate-100 border-2 border-transparent px-10 py-1 rounded-full mt-6'
               }
               onClick={() => {
                 setShuffle(!shuffle);
