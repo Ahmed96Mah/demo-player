@@ -14,6 +14,8 @@ const Home = () => {
   // To be used to move between tracks (with next & previous)
   const [currentTrack, setCurrentTrack] = useState(0);
 
+  const [shuffle, setShuffle] = useState(false);
+
   const navigate = useNavigate();
 
   const changeCurrentTrack = (id: number) => {
@@ -157,8 +159,13 @@ const Home = () => {
               controls
               src={tracks[currentTrack]['audio_src']}
               onEnded={() => {
-                setCurrentTrack(
+                // Move to the next track normally, If shuffle is off
+                shuffle === false && setCurrentTrack(
                   currentTrack === tracks.length - 1 ? 0 : currentTrack + 1
+                );
+                // Generate a random number between 
+                shuffle === true && setCurrentTrack(
+                  Math.floor(Math.random() * tracks.length)
                 );
               }}
             ></audio>
@@ -188,6 +195,9 @@ const Home = () => {
                 <span className="text-base text-stone-200 font-bold">Next</span>
               </button>
             </div>
+            <button className={(shuffle === false)? 'border-2 px-10 py-1 rounded-full mt-8':'bg-slate-100 border-2 border-transparent px-10 py-1 rounded-full mt-8'} onClick={() => {setShuffle(!shuffle);}}>
+              <span className={(shuffle === false)? 'text-base text-stone-200 font-bold': 'text-base text-black font-bold'}>Shuffle</span>
+            </button>
           </div>
         )}
         <div className={(tracks.length > 0)? 'w-11/12 my-10 pt-6 pb-3 bg-slate-200/[0.4] rounded-xl md:w-4/6 xl:w-1/3': 'hidden'}>
